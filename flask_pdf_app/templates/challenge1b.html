@@ -1,0 +1,435 @@
+{% extends "base.html" %}
+
+{% block title %}Challenge 1B - Persona-Driven Document Intelligence{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+        <div class="flex items-center mb-4">
+            <a href="{{ url_for('index') }}" class="text-blue-600 hover:text-blue-700 mr-4">
+                <i data-lucide="arrow-left" class="w-5 h-5"></i>
+            </a>
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 flex items-center">
+                    <i data-lucide="user" class="w-8 h-8 text-green-600 mr-3"></i>
+                    Challenge 1B: Persona-Driven Document Intelligence
+                </h1>
+                <p class="text-gray-600 mt-2">
+                    Analyze documents based on a specific persona and job-to-be-done
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Configuration Section -->
+    <div class="bg-white rounded-lg shadow p-6 mb-8">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <i data-lucide="settings" class="w-5 h-5 mr-2"></i>
+            Analysis Configuration
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                    <i data-lucide="user" class="w-4 h-4 mr-1"></i>
+                    Persona
+                </label>
+                <select id="persona-select" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="HR Professional">HR Professional</option>
+                    <option value="Travel Planner">Travel Planner</option>
+                    <option value="Software Developer">Software Developer</option>
+                    <option value="Marketing Manager">Marketing Manager</option>
+                    <option value="Financial Analyst">Financial Analyst</option>
+                    <option value="Project Manager">Project Manager</option>
+                    <option value="Content Creator">Content Creator</option>
+                    <option value="Data Scientist">Data Scientist</option>
+                </select>
+                <input type="text" id="persona-custom" placeholder="Or enter custom persona" 
+                       class="w-full mt-2 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                    <i data-lucide="target" class="w-4 h-4 mr-1"></i>
+                    Job to be Done
+                </label>
+                <select id="job-select" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="Create and manage fillable forms for employee onboarding">Create and manage fillable forms for employee onboarding</option>
+                    <option value="Plan a comprehensive travel itinerary">Plan a comprehensive travel itinerary</option>
+                    <option value="Learn new programming frameworks and tools">Learn new programming frameworks and tools</option>
+                    <option value="Develop marketing campaigns and strategies">Develop marketing campaigns and strategies</option>
+                    <option value="Analyze financial data and create reports">Analyze financial data and create reports</option>
+                    <option value="Manage project timelines and deliverables">Manage project timelines and deliverables</option>
+                    <option value="Create engaging content for audiences">Create engaging content for audiences</option>
+                    <option value="Extract insights from data analysis">Extract insights from data analysis</option>
+                </select>
+                <textarea id="job-custom" placeholder="Or describe the specific task/goal" 
+                          class="w-full mt-2 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" 
+                          rows="2"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- File Upload Section -->
+    <div class="bg-white rounded-lg shadow p-6 mb-8">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <i data-lucide="upload" class="w-5 h-5 mr-2"></i>
+            Upload PDF Documents
+        </h2>
+        
+        <form id="upload-form" enctype="multipart/form-data">
+            <div id="drop-zone" class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-gray-400 transition-colors">
+                <i data-lucide="upload" class="w-12 h-12 text-gray-400 mx-auto mb-4"></i>
+                <p class="text-gray-600 mb-2">
+                    Drag and drop PDF files here, or 
+                    <label class="text-blue-600 hover:text-blue-700 cursor-pointer font-medium">
+                        browse
+                        <input type="file" id="file-input" name="files" multiple accept=".pdf" class="hidden">
+                    </label>
+                </p>
+                <p class="text-sm text-gray-400">Supports multiple PDF files</p>
+            </div>
+        </form>
+
+        <!-- File List -->
+        <div id="file-list" class="mt-4 hidden">
+            <h3 class="text-sm font-medium text-gray-900 mb-3">Selected Files</h3>
+            <div id="file-items" class="space-y-2"></div>
+        </div>
+
+        <!-- Process Button -->
+        <div class="mt-6 flex justify-between items-center">
+            <button id="clear-files" class="text-red-600 hover:text-red-700 text-sm hidden">
+                <i data-lucide="trash-2" class="w-4 h-4 mr-1 inline"></i>
+                Clear All Files
+            </button>
+            <button id="process-btn" class="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                <i data-lucide="play" class="w-4 h-4 mr-2 inline"></i>
+                Analyze Documents
+            </button>
+        </div>
+    </div>
+
+    <!-- Loading indicator -->
+    <div id="loading" class="hidden">
+        <div class="bg-white rounded-lg shadow p-6 text-center">
+            <div class="spinner"></div>
+            <p class="text-gray-600">Analyzing documents with AI...</p>
+            <p class="text-sm text-gray-500 mt-2">This may take a few minutes for large documents</p>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div id="results" class="space-y-6"></div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+    const fileList = document.getElementById('file-list');
+    const fileItems = document.getElementById('file-items');
+    const clearBtn = document.getElementById('clear-files');
+    const processBtn = document.getElementById('process-btn');
+    const loadingDiv = document.getElementById('loading');
+    const resultsDiv = document.getElementById('results');
+    
+    const personaSelect = document.getElementById('persona-select');
+    const personaCustom = document.getElementById('persona-custom');
+    const jobSelect = document.getElementById('job-select');
+    const jobCustom = document.getElementById('job-custom');
+    
+    let selectedFiles = [];
+
+    // Configuration synchronization
+    personaSelect.addEventListener('change', function() {
+        personaCustom.value = this.value;
+    });
+    
+    personaCustom.addEventListener('input', function() {
+        if (this.value !== personaSelect.value) {
+            personaSelect.value = '';
+        }
+    });
+    
+    jobSelect.addEventListener('change', function() {
+        jobCustom.value = this.value;
+    });
+    
+    jobCustom.addEventListener('input', function() {
+        if (this.value !== jobSelect.value) {
+            jobSelect.value = '';
+        }
+    });
+
+    // Drag and drop functionality
+    dropZone.addEventListener('dragover', handleDragOver);
+    dropZone.addEventListener('dragleave', handleDragLeave);
+    dropZone.addEventListener('drop', handleDrop);
+    
+    // File input change
+    fileInput.addEventListener('change', handleFileSelect);
+    
+    // Clear files
+    clearBtn.addEventListener('click', clearFiles);
+    
+    // Process files
+    processBtn.addEventListener('click', processFiles);
+
+    function handleDragOver(e) {
+        e.preventDefault();
+        dropZone.classList.add('drag-over');
+    }
+
+    function handleDragLeave(e) {
+        e.preventDefault();
+        dropZone.classList.remove('drag-over');
+    }
+
+    function handleDrop(e) {
+        e.preventDefault();
+        dropZone.classList.remove('drag-over');
+        const files = Array.from(e.dataTransfer.files).filter(file => file.type === 'application/pdf');
+        addFiles(files);
+    }
+
+    function handleFileSelect(e) {
+        const files = Array.from(e.target.files).filter(file => file.type === 'application/pdf');
+        addFiles(files);
+    }
+
+    function addFiles(files) {
+        selectedFiles = [...selectedFiles, ...files];
+        updateFileList();
+        updateButtons();
+    }
+
+    function updateFileList() {
+        if (selectedFiles.length === 0) {
+            fileList.classList.add('hidden');
+            return;
+        }
+
+        fileList.classList.remove('hidden');
+        fileItems.innerHTML = selectedFiles.map((file, index) => `
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-md">
+                <div class="flex items-center">
+                    <i data-lucide="file-text" class="w-4 h-4 text-red-500 mr-3"></i>
+                    <div>
+                        <p class="text-sm font-medium text-gray-900">${file.name}</p>
+                        <p class="text-xs text-gray-500">${formatFileSize(file.size)}</p>
+                    </div>
+                </div>
+                <button onclick="removeFile(${index})" class="text-gray-400 hover:text-red-500 transition-colors">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+        `).join('');
+        
+        lucide.createIcons();
+    }
+
+    function removeFile(index) {
+        selectedFiles.splice(index, 1);
+        updateFileList();
+        updateButtons();
+    }
+
+    function clearFiles() {
+        selectedFiles = [];
+        fileInput.value = '';
+        updateFileList();
+        updateButtons();
+        resultsDiv.innerHTML = '';
+    }
+
+    function updateButtons() {
+        const hasFiles = selectedFiles.length > 0;
+        processBtn.disabled = !hasFiles;
+        clearBtn.classList.toggle('hidden', !hasFiles);
+    }
+
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    async function processFiles() {
+        if (selectedFiles.length === 0) return;
+
+        const persona = personaCustom.value.trim() || personaSelect.value;
+        const jobToBeDone = jobCustom.value.trim() || jobSelect.value;
+
+        if (!persona || !jobToBeDone) {
+            alert('Please provide both persona and job to be done');
+            return;
+        }
+
+        // Show loading
+        loadingDiv.classList.remove('hidden');
+        resultsDiv.innerHTML = '';
+        processBtn.disabled = true;
+
+        const formData = new FormData();
+        selectedFiles.forEach(file => {
+            formData.append('files', file);
+        });
+        formData.append('persona', persona);
+        formData.append('job_to_be_done', jobToBeDone);
+
+        try {
+            const response = await fetch('/api/challenge1b/analyze', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Failed to analyze documents');
+            }
+
+            displayResults(data);
+        } catch (error) {
+            resultsDiv.innerHTML = `
+                <div class="bg-red-50 border border-red-200 rounded-md p-4 flex items-center">
+                    <i data-lucide="alert-circle" class="w-5 h-5 text-red-500 mr-2"></i>
+                    <span class="text-red-700">${error.message}</span>
+                </div>
+            `;
+            lucide.createIcons();
+        } finally {
+            loadingDiv.classList.add('hidden');
+            processBtn.disabled = false;
+        }
+    }
+
+    function displayResults(data) {
+        if (!data) {
+            resultsDiv.innerHTML = '<p class="text-gray-500 text-center">No results to display.</p>';
+            return;
+        }
+
+        const getImportanceColor = (rank) => {
+            if (rank <= 2) return 'text-green-700 bg-green-50 border-green-200';
+            if (rank <= 4) return 'text-yellow-700 bg-yellow-50 border-yellow-200';
+            return 'text-red-700 bg-red-50 border-red-200';
+        };
+
+        let resultsHTML = `
+            <!-- Summary -->
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h3 class="font-semibold text-blue-900 mb-2 flex items-center">
+                    <i data-lucide="check-circle" class="w-5 h-5 mr-2"></i>
+                    Analysis Complete
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div>
+                        <span class="text-blue-700 font-medium">Persona:</span>
+                        <p class="text-blue-900">${data.persona || 'N/A'}</p>
+                    </div>
+                    <div>
+                        <span class="text-blue-700 font-medium">Task:</span>
+                        <p class="text-blue-900">${data.job_to_be_done || 'N/A'}</p>
+                    </div>
+                    <div>
+                        <span class="text-blue-700 font-medium">Documents:</span>
+                        <p class="text-blue-900">${data.input_documents?.length || 0} files processed</p>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Extracted Sections
+        if (data.extracted_sections && data.extracted_sections.length > 0) {
+            resultsHTML += `
+                <div class="border border-gray-200 rounded-lg">
+                    <div class="bg-gray-50 px-4 py-3 border-b border-gray-200 rounded-t-lg">
+                        <h3 class="font-semibold text-gray-900 flex items-center">
+                            <i data-lucide="star" class="w-4 h-4 mr-2"></i>
+                            Most Relevant Sections (${data.extracted_sections.length})
+                        </h3>
+                    </div>
+                    <div class="p-4 space-y-4">
+                        ${data.extracted_sections.map(section => `
+                            <div class="border border-gray-200 rounded-lg">
+                                <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center">
+                                            <i data-lucide="file-text" class="w-4 h-4 text-gray-600 mr-2"></i>
+                                            <h4 class="font-medium text-gray-900">
+                                                ${section.document || section.document_title || section.filename || 'Unknown Document'}
+                                            </h4>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <span class="px-2 py-1 rounded text-xs font-medium border ${getImportanceColor(section.importance_rank)}">
+                                                Rank #${section.importance_rank}
+                                            </span>
+                                            <span class="text-sm text-gray-500">
+                                                Page ${section.page_number || 'N/A'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <p class="text-sm text-gray-600 mt-1">
+                                        ${section.section_title || 'Untitled Section'}
+                                    </p>
+                                </div>
+                                <div class="p-4">
+                                    <p class="text-gray-700 leading-relaxed">
+                                        ${section.content || 'No content available'}
+                                    </p>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Subsection Analysis
+        if (data.subsection_analysis && data.subsection_analysis.length > 0) {
+            resultsHTML += `
+                <div class="border border-gray-200 rounded-lg">
+                    <div class="bg-gray-50 px-4 py-3 border-b border-gray-200 rounded-t-lg">
+                        <h3 class="font-semibold text-gray-900 flex items-center">
+                            <i data-lucide="trending-up" class="w-4 h-4 mr-2"></i>
+                            Subsection Analysis
+                        </h3>
+                    </div>
+                    <div class="p-4 space-y-3">
+                        ${data.subsection_analysis.map(analysis => `
+                            <div class="bg-gray-50 rounded-md p-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm font-medium text-gray-900">
+                                        ${analysis.document || analysis.document_title || 'Unknown Document'} - ${analysis.section_title || 'Untitled Section'}
+                                    </span>
+                                    <span class="text-xs text-gray-500">
+                                        Page ${analysis.page_number || 'N/A'}
+                                    </span>
+                                </div>
+                                <p class="text-sm text-gray-700">
+                                    ${analysis.key_insight || analysis.summary || 'No insights available'}
+                                </p>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        resultsDiv.innerHTML = resultsHTML;
+        lucide.createIcons();
+    }
+
+    // Make removeFile global so it can be called from onclick
+    window.removeFile = removeFile;
+});
+</script>
+{% endblock %}

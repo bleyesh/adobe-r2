@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+
+{% block title %}PDF Analysis Platform{% endblock %}
+
+{% block content %}
+<div class="text-center mb-12">
+    <h1 class="text-4xl font-bold text-gray-900 mb-4">PDF Analysis Platform</h1>
+    <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+        Transform your PDF documents with AI-powered analysis using Challenge 1A and 1B solutions
+    </p>
+</div>
+
+<!-- Feature Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+    <!-- Challenge 1A Card -->
+    <div class="bg-white rounded-lg shadow-lg p-8">
+        <div class="flex items-center mb-4">
+            <i data-lucide="file-text" class="w-8 h-8 text-blue-600 mr-3"></i>
+            <h2 class="text-2xl font-bold text-gray-900">Challenge 1A</h2>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-800 mb-3">PDF Outline Extraction</h3>
+        <p class="text-gray-600 mb-6">
+            Extract structured outlines including document titles and hierarchical headings (H1-H4) 
+            from PDF documents using advanced font-based analysis.
+        </p>
+        <div class="mb-6">
+            <h4 class="font-semibold text-gray-700 mb-2">Features:</h4>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li class="flex items-center">
+                    <i data-lucide="check" class="w-4 h-4 text-green-500 mr-2"></i>
+                    Automatic title detection
+                </li>
+                <li class="flex items-center">
+                    <i data-lucide="check" class="w-4 h-4 text-green-500 mr-2"></i>
+                    Hierarchical heading extraction
+                </li>
+                <li class="flex items-center">
+                    <i data-lucide="check" class="w-4 h-4 text-green-500 mr-2"></i>
+                    Multi-language support
+                </li>
+                <li class="flex items-center">
+                    <i data-lucide="check" class="w-4 h-4 text-green-500 mr-2"></i>
+                    Batch processing
+                </li>
+            </ul>
+        </div>
+        {% if challenge_1a_available %}
+            <a href="{{ url_for('challenge1a') }}" 
+               class="inline-flex items-center bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition-colors">
+                <i data-lucide="play" class="w-4 h-4 mr-2"></i>
+                Try Challenge 1A
+            </a>
+        {% else %}
+            <div class="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+                <div class="flex items-center">
+                    <i data-lucide="alert-triangle" class="w-5 h-5 text-yellow-600 mr-2"></i>
+                    <span class="text-yellow-800">Challenge 1A dependencies not installed</span>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Challenge 1B Card -->
+    <div class="bg-white rounded-lg shadow-lg p-8">
+        <div class="flex items-center mb-4">
+            <i data-lucide="user" class="w-8 h-8 text-green-600 mr-3"></i>
+            <h2 class="text-2xl font-bold text-gray-900">Challenge 1B</h2>
+        </div>
+        <h3 class="text-lg font-semibold text-gray-800 mb-3">Persona-Driven Document Intelligence</h3>
+        <p class="text-gray-600 mb-6">
+            Analyze documents based on specific personas and job-to-be-done scenarios using 
+            advanced semantic embedding and ranking algorithms.
+        </p>
+        <div class="mb-6">
+            <h4 class="font-semibold text-gray-700 mb-2">Features:</h4>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li class="flex items-center">
+                    <i data-lucide="check" class="w-4 h-4 text-green-500 mr-2"></i>
+                    Persona-based analysis
+                </li>
+                <li class="flex items-center">
+                    <i data-lucide="check" class="w-4 h-4 text-green-500 mr-2"></i>
+                    Relevance ranking
+                </li>
+                <li class="flex items-center">
+                    <i data-lucide="check" class="w-4 h-4 text-green-500 mr-2"></i>
+                    Multi-document processing
+                </li>
+                <li class="flex items-center">
+                    <i data-lucide="check" class="w-4 h-4 text-green-500 mr-2"></i>
+                    Semantic understanding
+                </li>
+            </ul>
+        </div>
+        {% if challenge_1b_available %}
+            <a href="{{ url_for('challenge1b') }}" 
+               class="inline-flex items-center bg-green-600 text-white px-6 py-3 rounded-md hover:bg-green-700 transition-colors">
+                <i data-lucide="target" class="w-4 h-4 mr-2"></i>
+                Try Challenge 1B
+            </a>
+        {% else %}
+            <div class="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+                <div class="flex items-center">
+                    <i data-lucide="alert-triangle" class="w-5 h-5 text-yellow-600 mr-2"></i>
+                    <span class="text-yellow-800">Challenge 1B dependencies not installed</span>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- How it Works -->
+<div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">How It Works</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="text-center">
+            <div class="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="upload" class="w-8 h-8 text-blue-600"></i>
+            </div>
+            <h3 class="font-semibold text-gray-900 mb-2">1. Upload PDFs</h3>
+            <p class="text-gray-600 text-sm">
+                Upload one or more PDF documents that you want to analyze
+            </p>
+        </div>
+        <div class="text-center">
+            <div class="bg-green-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="settings" class="w-8 h-8 text-green-600"></i>
+            </div>
+            <h3 class="font-semibold text-gray-900 mb-2">2. Configure Analysis</h3>
+            <p class="text-gray-600 text-sm">
+                Choose your analysis type and configure parameters (persona, task, etc.)
+            </p>
+        </div>
+        <div class="text-center">
+            <div class="bg-purple-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="download" class="w-8 h-8 text-purple-600"></i>
+            </div>
+            <h3 class="font-semibold text-gray-900 mb-2">3. Get Results</h3>
+            <p class="text-gray-600 text-sm">
+                Receive structured analysis results with outlines, rankings, and insights
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Installation Status -->
+<div class="bg-gray-100 rounded-lg p-6">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+        <i data-lucide="info" class="w-5 h-5 mr-2"></i>
+        System Status
+    </h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="flex items-center">
+            {% if challenge_1a_available %}
+                <i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2"></i>
+                <span class="text-green-700">Challenge 1A: Ready</span>
+            {% else %}
+                <i data-lucide="x-circle" class="w-5 h-5 text-red-500 mr-2"></i>
+                <span class="text-red-700">Challenge 1A: Not Available</span>
+            {% endif %}
+        </div>
+        <div class="flex items-center">
+            {% if challenge_1b_available %}
+                <i data-lucide="check-circle" class="w-5 h-5 text-green-500 mr-2"></i>
+                <span class="text-green-700">Challenge 1B: Ready</span>
+            {% else %}
+                <i data-lucide="x-circle" class="w-5 h-5 text-red-500 mr-2"></i>
+                <span class="text-red-700">Challenge 1B: Not Available</span>
+            {% endif %}
+        </div>
+    </div>
+    {% if not challenge_1a_available or not challenge_1b_available %}
+        <div class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+            <p class="text-yellow-800 text-sm">
+                <i data-lucide="alert-triangle" class="w-4 h-4 inline mr-1"></i>
+                Some features may not work. Please install missing dependencies using: 
+                <code class="bg-yellow-100 px-2 py-1 rounded">pip install -r requirements.txt</code>
+            </p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,6 @@
+pymupdf
+transformers
+sentence-transformers
+scikit-learn
+numpy
+tqdm

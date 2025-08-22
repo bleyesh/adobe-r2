@@ -14,7 +14,7 @@ This guide provides step-by-step instructions to set up and run the PDF Analysis
 If you haven't already, download or clone the project and navigate to the main project directory:
 
 ```bash
-cd /path/to/Bubbletea_solutions-main/Bubbletea_solutions-main
+cd /path/to/adobe-r2
 ```
 
 ---

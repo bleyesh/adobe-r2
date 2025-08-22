@@ -311,123 +311,117 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function displayResults(data) {
-        if (!data) {
-            resultsDiv.innerHTML = '<p class="text-gray-500 text-center">No results to display.</p>';
-            return;
-        }
+function displayResults(data) {
+    if (!data) {
+        resultsDiv.innerHTML = '<p class="text-gray-500 text-center">No results to display.</p>';
+        return;
+    }
 
-        const getImportanceColor = (rank) => {
-            if (rank <= 2) return 'text-green-700 bg-green-50 border-green-200';
-            if (rank <= 4) return 'text-yellow-700 bg-yellow-50 border-yellow-200';
-            return 'text-red-700 bg-red-50 border-red-200';
-        };
+    const getImportanceColor = (rank) => {
+        if (rank <= 2) return 'text-green-700 bg-green-50 border-green-200';
+        if (rank <= 4) return 'text-yellow-700 bg-yellow-50 border-yellow-200';
+        return 'text-red-700 bg-red-50 border-red-200';
+    };
 
-        let resultsHTML = `
-            <!-- Summary -->
-            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h3 class="font-semibold text-blue-900 mb-2 flex items-center">
-                    <i data-lucide="check-circle" class="w-5 h-5 mr-2"></i>
-                    Analysis Complete
-                </h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                    <div>
-                        <span class="text-blue-700 font-medium">Persona:</span>
-                        <p class="text-blue-900">${data.persona || 'N/A'}</p>
-                    </div>
-                    <div>
-                        <span class="text-blue-700 font-medium">Task:</span>
-                        <p class="text-blue-900">${data.job_to_be_done || 'N/A'}</p>
-                    </div>
-                    <div>
-                        <span class="text-blue-700 font-medium">Documents:</span>
-                        <p class="text-blue-900">${data.input_documents?.length || 0} files processed</p>
-                    </div>
+    let resultsHTML = `
+        <!-- Summary -->
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <h3 class="font-semibold text-blue-900 mb-2 flex items-center">
+                <i data-lucide="check-circle" class="w-5 h-5 mr-2"></i>
+                Analysis Complete
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                <div>
+                    <span class="text-blue-700 font-medium">Persona:</span>
+                    <p class="text-blue-900">${data.metadata?.persona || ''}</p>
+                </div>
+                <div>
+                    <span class="text-blue-700 font-medium">Task:</span>
+                    <p class="text-blue-900">${data.metadata?.job_to_be_done || ''}</p>
+                </div>
+                <div>
+                    <span class="text-blue-700 font-medium">Documents:</span>
+                    <p class="text-blue-900">${data.metadata?.input_documents?.length || 0} files processed</p>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Extracted Sections
+    if (data.extracted_sections && data.extracted_sections.length > 0) {
+        resultsHTML += `
+            <div class="border border-gray-200 rounded-lg">
+                <div class="bg-gray-50 px-4 py-3 border-b border-gray-200 rounded-t-lg">
+                    <h3 class="font-semibold text-gray-900 flex items-center">
+                        <i data-lucide="star" class="w-4 h-4 mr-2"></i>
+                        Most Relevant Sections (${data.extracted_sections.length})
+                    </h3>
+                </div>
+                <div class="p-4 space-y-4">
+                    ${data.extracted_sections.map(section => `
+                        <div class="border border-gray-200 rounded-lg">
+                            <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <i data-lucide="file-text" class="w-4 h-4 text-gray-600 mr-2"></i>
+                                        <h4 class="font-medium text-gray-900">
+                                            ${section.document || section.document_title || section.filename || 'Unknown Document'}
+                                        </h4>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="px-2 py-1 rounded text-xs font-medium border ${getImportanceColor(section.importance_rank)}">
+                                            Rank #${section.importance_rank}
+                                        </span>
+                                        <span class="text-sm text-gray-500">
+                                            Page ${section.page_number || 'N/A'}
+                                        </span>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-gray-600 mt-1">
+                                    ${section.section_title || ''}
+                                </p>
+                            </div>
+                        </div>
+                    `).join('')}
                 </div>
             </div>
         `;
-
-        // Extracted Sections
-        if (data.extracted_sections && data.extracted_sections.length > 0) {
-            resultsHTML += `
-                <div class="border border-gray-200 rounded-lg">
-                    <div class="bg-gray-50 px-4 py-3 border-b border-gray-200 rounded-t-lg">
-                        <h3 class="font-semibold text-gray-900 flex items-center">
-                            <i data-lucide="star" class="w-4 h-4 mr-2"></i>
-                            Most Relevant Sections (${data.extracted_sections.length})
-                        </h3>
-                    </div>
-                    <div class="p-4 space-y-4">
-                        ${data.extracted_sections.map(section => `
-                            <div class="border border-gray-200 rounded-lg">
-                                <div class="bg-gray-50 px-4 py-3 border-b border-gray-200">
-                                    <div class="flex items-center justify-between">
-                                        <div class="flex items-center">
-                                            <i data-lucide="file-text" class="w-4 h-4 text-gray-600 mr-2"></i>
-                                            <h4 class="font-medium text-gray-900">
-                                                ${section.document || section.document_title || section.filename || 'Unknown Document'}
-                                            </h4>
-                                        </div>
-                                        <div class="flex items-center space-x-2">
-                                            <span class="px-2 py-1 rounded text-xs font-medium border ${getImportanceColor(section.importance_rank)}">
-                                                Rank #${section.importance_rank}
-                                            </span>
-                                            <span class="text-sm text-gray-500">
-                                                Page ${section.page_number || 'N/A'}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <p class="text-sm text-gray-600 mt-1">
-                                        ${section.section_title || 'Untitled Section'}
-                                    </p>
-                                </div>
-                                <div class="p-4">
-                                    <p class="text-gray-700 leading-relaxed">
-                                        ${section.content || 'No content available'}
-                                    </p>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            `;
-        }
-
-        // Subsection Analysis
-        if (data.subsection_analysis && data.subsection_analysis.length > 0) {
-            resultsHTML += `
-                <div class="border border-gray-200 rounded-lg">
-                    <div class="bg-gray-50 px-4 py-3 border-b border-gray-200 rounded-t-lg">
-                        <h3 class="font-semibold text-gray-900 flex items-center">
-                            <i data-lucide="trending-up" class="w-4 h-4 mr-2"></i>
-                            Subsection Analysis
-                        </h3>
-                    </div>
-                    <div class="p-4 space-y-3">
-                        ${data.subsection_analysis.map(analysis => `
-                            <div class="bg-gray-50 rounded-md p-3">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm font-medium text-gray-900">
-                                        ${analysis.document || analysis.document_title || 'Unknown Document'} - ${analysis.section_title || 'Untitled Section'}
-                                    </span>
-                                    <span class="text-xs text-gray-500">
-                                        Page ${analysis.page_number || 'N/A'}
-                                    </span>
-                                </div>
-                                <p class="text-sm text-gray-700">
-                                    ${analysis.key_insight || analysis.summary || 'No insights available'}
-                                </p>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            `;
-        }
-
-        resultsDiv.innerHTML = resultsHTML;
-        lucide.createIcons();
     }
 
+    // Subsection Analysis
+    if (data.subsection_analysis && data.subsection_analysis.length > 0) {
+        resultsHTML += `
+            <div class="border border-gray-200 rounded-lg">
+                <div class="bg-gray-50 px-4 py-3 border-b border-gray-200 rounded-t-lg">
+                    <h3 class="font-semibold text-gray-900 flex items-center">
+                        <i data-lucide="trending-up" class="w-4 h-4 mr-2"></i>
+                        Subsection Analysis
+                    </h3>
+                </div>
+                <div class="p-4 space-y-3">
+                    ${data.subsection_analysis.map(analysis => `
+                        <div class="bg-gray-50 rounded-md p-3">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm font-medium text-gray-900">
+                                    ${analysis.document || analysis.document_title || 'Unknown Document'} - ${analysis.section_title || ''}
+                                </span>
+                                <span class="text-xs text-gray-500">
+                                    Page ${analysis.page_number || 'N/A'}
+                                </span>
+                            </div>
+                            <p class="text-sm text-gray-700">
+                                ${analysis.refined_text || ''}
+                            </p>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    resultsDiv.innerHTML = resultsHTML;
+    lucide.createIcons();
+}
     // Make removeFile global so it can be called from onclick
     window.removeFile = removeFile;
 });

@@ -17,6 +17,7 @@ If you haven't already, download or clone the project and navigate to the main p
 cd /path/to/adobe-r2
 ```
 
+
 ---
 
 ## 3. Create and Activate a Virtual Environment
